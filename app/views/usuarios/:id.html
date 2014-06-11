@@ -1,0 +1,150 @@
+<div class="page">
+	<div class="row">
+		<div class="col-md-6">
+			<div class="panel panel-profile">
+                <div class="panel-heading text-center bg-info">
+                    <h3>{{perfil.usuario_nom}} {{perfil.usuario_ape}}</h3>
+                    <p>Unidad</p>
+                </div>
+                <div class="list-justified-container">
+                    <ul class="list-justified text-center">
+                        <li>
+                            <p class="size-h3">{{mod_datos.num}}</p>
+                            <p class="text-muted">Modificados</p>
+                        </li>
+                        <li>
+                            <p class="size-h3">{{com_datos.num}}</p>
+                            <p class="text-muted">Comentarios</p>
+                        </li>
+                        <li>
+                            <p class="size-h5"><span am-time-ago="perfil.usuario_lastaccess"></span></p>
+                            <p class="text-muted">Último Acceso</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-default">
+                <div class="panel-heading"><strong><span class="glyphicon glyphicon-th"></span> Profile Info</strong></div>
+                <div class="panel-body">
+                    <div class="media">
+                        <div class="media-body">
+                            <ul class="list-unstyled list-info">
+                                <li>
+                                    <span class="icon glyphicon glyphicon-user"></span>
+                                    <label>Nombre</label>
+                                    {{perfil.usuario_nom}} {{perfil.usuario_ape}}
+                                </li>
+                                <li>
+                                    <span class="icon glyphicon glyphicon-envelope"></span>
+                                    <label>Email</label>
+                                    {{perfil.usuario_user}}
+                                </li>
+                                <li>
+                                    <span class="icon glyphicon glyphicon-home"></span>
+                                    <label>Unidad</label>
+                                    Unidad
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6 modCom">
+			<div class="ui-tab-container" style="background: white;">
+                <tabset justified="true" class="ui-tab">
+                    <tab heading="Modificaciones por barrio">
+                    	<div style="height: 400px">
+	                    	<nvd3-pie-chart
+						    	data="mod_datos.por_barrio"
+						        id="modBarrio"
+						        x="xFunction()"
+						        y="yFunction()"
+						        donut="true"
+						        tooltips="true"
+						        showLabels="true"
+						        labelType="percent"
+						        donutLabelsOutside="true"
+						        margin="{left:0,top:0,bottom:0,right:20}"
+						        tooltipcontent="toolTipContentFunction()"
+						        donutRatio=".45">
+						        <svg></svg>
+				        	</nvd3-pie-chart>
+                    		
+                    	</div>
+                    </tab>
+                    <tab heading="Últimas modificaciones">
+                    	<div data-slim-scroll scroll-height="400">
+                        	<ul class="list-group" style="margin-bottom: 0">
+			                    <li ng-repeat="p in mod_datos.last"  class="list-group-item">
+				                        <a href="#/miembros/barrio/{{p.barrio_id}}/detalle/{{p.persona_id}}">{{p.persona_nom}}</a> <small>/ {{p.usuario_nom}} {{p.usuario_ape}} (<span am-time-ago="p.modificado"></span>)</small>
+				                    </li>
+			                </ul>
+                    	</div>
+                    </tab>
+                </tabset>
+            </div>
+		</div>
+		<div class="col-md-6 modCom">
+			<div class="ui-tab-container" style="background: white;">
+                <tabset justified="true" class="ui-tab">
+                    <tab heading="Comentarios por barrio">
+                    	<div style="height: 400px">
+	                    	<nvd3-pie-chart
+						    	data="com_datos.por_barrio"
+						        id="comBarrio"
+						        x="xFunction()"
+						        y="yFunction()"
+						        donut="true"
+						        tooltips="true"
+						        showLabels="true"
+						        labelType="percent"
+						        donutLabelsOutside="true"
+						        margin="{left:0,top:0,bottom:0,right:0}"
+						        tooltipcontent="toolTipContentFunction()"
+						        donutRatio=".45">
+						        <svg></svg>
+				        	</nvd3-pie-chart>
+                    	</div>
+                    </tab>
+                    <tab heading="Últimos comentarios">
+                    	<div data-slim-scroll scroll-height="400">
+                        	<ul class="list-group" style="margin-bottom: 0">
+			                    <li ng-repeat="p in com_datos.last"  class="list-group-item">
+			                        <a href="#/miembros/barrio/{{p.barrio_id}}/detalle/{{p.persona_id}}">{{p.persona_nom}}</a>
+			                        <p style="margin:0">{{p.comentario}}</p>
+			                        <small>({{p.usuario_nom}} {{p.usuario_ape}} | <span am-time-ago="p.creado"></span>)</small>
+			                    </li>
+			                </ul>
+                    	</div>
+                    </tab>
+                </tabset>
+            </div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<section class="panel panel-default" style="height:400px">
+                <div class="panel-heading"><span class="glyphicon glyphicon-th"></span> Modificaciones / Comentarios</div>
+                <nvd3-line-chart
+			        data="modcom_tiempoD3"
+			        id="modcom_tiempo"
+			        showXAxis="true"
+			        showYAxis="true"
+			        tooltips="true"
+			        useInteractiveGuideline="true"
+			        xAxisTickFormat="xAxisTickFormatFunction()"
+			        margin="{left:35,top:20,bottom:70,right:35}"
+			        showLegend="true"
+			        interactive="true"
+			        tooltips="true">
+			    	<svg></svg>
+			    </nvd3-line-chart>
+            </section>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,21 @@
+        
+<div id="nav-wrapper">
+    <ul id="nav"
+        data-ng-controller="NavCtrl"
+        data-slim-scroll
+        data-collapse-nav
+        data-highlight-active>
+        <li><a href="#/escritorio"><i class="fa fa-dashboard"></i><span data-i18n="Statistics"></span> </a></li>
+        <li><a href="#/miembros"><i class="fa fa-users"></i><span data-i18n="Members"></span> </a></li>
+        <li>
+            <a href="#/reportes"><i class="fa fa-filter"></i><span data-i18n="Reports"></span></a>
+            <ul>
+                <li><a href="#/reportes/avisitar"><i class="fa fa-caret-right"></i><span data-i18n="To Visit"></span></a></li>
+                <li><a href="#/reportes/actualizarmls"><i class="fa fa-caret-right"></i><span data-i18n="To Update"></span></a></li>
+            </ul>
+        </li>
+        <li ng-show="main.permisos_usuarios > 0"><a href="#/usuarios"><i class="fa fa-users"></i><span data-i18n="Users"></span> </a></li>
+        <li><a href="#/buscador"><i class="fa fa-search"></i><span data-i18n="Search"></span> </a></li>
+        <li><a href="#/ayuda"><i class="fa fa-question"></i><span data-i18n="Help"></span> </a></li>
+    </ul>
+</div>

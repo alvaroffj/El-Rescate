@@ -1,0 +1,21 @@
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-md-4 col-md-offset-4">
+            <h1 style="color: white;text-align: center;">El Rescate</h1>
+        	<div class="account-wall">
+        		<div class="inner-content">
+                <form name="loginForm" class="form-signin" ng-submit="doLogin()" novalidate>
+                    <input name="email" type="email" ng-model="log.user" class="form-control" placeholder="Email" required autofocus>
+                    <input name="pass" type="password"  ng-model="log.pass" class="form-control" placeholder="Contraseña" required>
+                    <button class="btn btn-lg btn-primary btn-block" type="submit" ng-disabled="loginForm.$invalid || cargando">Ingresar</button>
+                    <!-- <label class="checkbox pull-left">
+                        <input type="checkbox" value="remember-me">
+                        Recuerdame
+                    </label> -->
+                    <a href="#" class="pull-right need-help">Crear cuenta</a><span class="clearfix"></span>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

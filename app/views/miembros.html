@@ -1,0 +1,155 @@
+<div class="golden-ratio-2" ng-controller="MiembrosCtrl">
+	<div class="row">
+		<div class="col-md-12">
+			<h2 class="sec-title">Miembros</h2>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="row">
+		<div class="col-md-12" style="text-align: right">
+			<div ng-show="acceso" class="fade-show" style="padding: 0 5px;">
+		        <div class="input-group select2-bootstrap-append">
+					<select ui-select2="{allowClear: true}" ng-model="cargaAux" data-placeholder="Seleccione la unidad" style="width:309px; text-align: left;" ng-show="acceso" ng-disabled="cargando">
+						<option></option>
+						<optgroup label="Mision">
+					    	<option ng-repeat="f in acceso.mision | filter:{mision_id: carga.mision_id}" value="{{f}}">{{f.mision_nom}}</option>
+						</optgroup>
+						<optgroup label="Estaca">
+					    	<option ng-repeat="f in acceso.estaca | filter:{mision_id: carga.mision_id, estaca_id: carga.estaca_id}" value="{{f}}">{{f.estaca_nom}}</option>
+						</optgroup>
+						<optgroup label="Barrio">
+					    	<option ng-repeat="f in acceso.barrio | filter:carga:strict" value="{{f}}">{{f.barrio_nom}}</option>
+						</optgroup>
+					</select>
+					<span class="input-group-btn">
+			          <button class="btn btn-primary" type="button" data-select2-open="multi-append" ng-click="cargarMiembros()" ng-disabled="cargando || !carga.barrio_id">
+			            <i class="fa fa-check"></i>
+			          </button>
+			        </span>
+		        </div>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div ng-show="miembros">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="input-group">
+					<span class="input-group-btn">
+						<div class="btn-group" dropdown>
+							<button type="button" class="btn btn-default dropdown-toggle" tooltip="Filtrar">
+								<i class="fa fa-filter"></i>
+							</button>
+							<ul class="dropdown-menu with-arrow dropdown-check">
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.all" type="checkbox">
+											<span>Todos</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.sin_rut" type="checkbox">
+											<span>Sin Rut</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.sin_dir_mls" type="checkbox">
+											<span>Sin Dirección MLS</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.persona_cabezahogar" type="checkbox">
+											<span>Cabeza de Hogar</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.persona_investido" type="checkbox">
+											<span>Investidos</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.persona_sellado" type="checkbox">
+											<span>Sellados</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.persona_exmisionero" type="checkbox">
+											<span>Ex Misioneros</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_n" type="checkbox">
+											<span>No Ordenado</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_d" type="checkbox">
+											<span>Diaconos</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_m" type="checkbox">
+											<span>Maestros</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_p" type="checkbox">
+											<span>Presbiteros</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_e" type="checkbox">
+											<span>Elderes</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_s" type="checkbox">
+											<span>Sumo Sacerdotes</span>
+									</label>
+								</li>
+							</ul>
+						</div>
+						<div class="btn-group" dropdown>
+							<button type="button" class="btn btn-default dropdown-toggle" tooltip="Ordenar">
+								<i class="fa fa-sort-amount-asc"></i>
+							</button>
+							<ul class="dropdown-menu with-arrow">
+								<li ng-class="{active: currOrden == 'persona_rut'}"><a ng-click="setOrden('persona_rut')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('persona_rut')" style="margin-left: -18px;"></span>Rut</a></li>
+								<li ng-class="{active: currOrden == 'persona_nom'}"><a ng-click="setOrden('persona_nom')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('persona_nom')" style="margin-left: -18px;"></span>Nombre</a></li>
+								<li ng-class="{active: currOrden == 'persona_fecnac'}"><a ng-click="setOrden('persona_fecnac')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('persona_fecnac')" style="margin-left: -18px;"></span>Edad</a></li>
+								<li ng-class="{active: currOrden == 'direccion[0].direccion'}"><a ng-click="setOrden('direccion[0].direccion')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('direccion[0].direccion')" style="margin-left: -18px;"></span>Dirección</a></li>
+							</ul>
+						</div>
+					</span>
+					<input class="form-control" type="text" placeholder="Filtrar miembros" ng-model="filtro.$">
+				</div>
+		    </div>
+		</div>
+		<div style="position:absolute; top:112px; bottom:0">
+			<div data-slim-scroll>
+				<a  ng-repeat="p in miembros | orderBy:orden | filter:filtro | filterMultiple:filtroPre" href="#/miembros/{{nivel}}/{{unidad}}/detalle/{{p.persona_id}}">
+					<div ng-class="{dead: p.persona_fallecido, verificado:p.persona_verificado, no_rut:p.persona_no_rut, cabeza_hogar:p.persona_cabezahogar}" class="persona">
+						<span class="nombre">{{p.persona_nom}} <span ng-show="p.persona_edad>0" class="badge badge-danger pull-right">{{p.persona_edad}}</span></span>
+						<span class="rut">{{p.persona_rut_h}}</span>
+						<span class="fecha">{{p.persona_fecnac | date:'dd/MM/yyyy'}} <span ng-show="p.persona_fecfall"> - {{p.persona_fecfall | date:'dd/MM/yyyy'}}</span></span>
+						<!-- <div class="direccion" tooltip-html-unsafe="{{tooltipDirecciones(p)}}" tooltip-trigger="mouseenter" tooltip-placement="bottom">{{p.direccion[0].direccion}}, {{p.direccion[0].comuna_nom}}, {{p.direccion[0].region_nom}}</div> -->
+						<div class="direccion">{{p.direccion[0].direccion}}, {{p.direccion[0].comuna_nom}}, {{p.direccion[0].region_nom}}</div>
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+<div ui-view class="golden-ratio-3"></div>

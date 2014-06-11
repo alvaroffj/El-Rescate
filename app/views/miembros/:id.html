@@ -1,0 +1,552 @@
+<div ng-hide="cargando" class="fade-show page" style="padding-top: 5px;padding-right: 10px;">
+	<div class="row">
+		<div class="col-md-8">
+			<h2 class="sec-title" style="display:block;">
+				{{miembro.persona_nom}} 
+
+			</h2>
+		</div>
+		<div class="col-md-4">
+			<div class="subnav" ng-hide="cargando">
+				<a href="" class="btn btn-success margin-left" ng-click="openVerificar()" ng-hide="miembro.persona_verificado" ng-disabled="miembro.direccion.length == 0" tooltip="Verificar" tooltip-placement="bottom"><i class="fa fa-check fa-fw"></i></a>
+				<a href="" class="btn btn-success margin-left" ng-click="do('mlsActualizar')" ng-disabled="!mlsActualizado() || cargandoMLS" tooltip="MLS Actualizado" tooltip-placement="bottom"><i class="fa fa-refresh fa-fw"></i></a>
+			</div>
+		</div>
+	</div>
+	<!-- <ul class="update pull-right">
+		<li>Última actualización: 16-01-2014 16:09:23</li>
+		<li><b>Última actualización MLS: 01-01-2014 12:19:20</b></li>
+		<li><a href="" class="btn btn-success btn-sm" tooltip="Marcar como actualizado en MLS" tooltip-placement="left"><i class="fa fa-check fa-fw"></i> MLS</a></li>
+	</ul> -->
+	<!-- <h3>Datos basicos</h3> -->
+	<div class="panel panel-default">
+		<div class="panel-heading"><strong><span class="glyphicon glyphicon-th"></span> Datos Basicos </strong>
+			<span ng-show="miembro.persona_edad>=0" tooltip="{{miembro.persona_edad}} años" tooltip-placement="bottom" class="label label-danger margin-left">{{miembro.persona_edad}}</span>
+			<a class="btn btn-xs margin-left" ng-class="classVerificado" ng-show="miembro.persona_verificado" tooltip="Verificado" tooltip-placement="bottom" ng-mouseenter="setEnter('verificado')" ng-mouseleave="setLeave('verificado')" ng-click="undoVerificar()" style="padding: 2px 5px 1px 5px;margin-top: -1px;">
+				<i class="fa fa-fw" ng-class="iconVerificado"></i>
+			</a>
+			<span class="label label-{{sacerdocio[miembro.persona_ofisac][1]}} margin-left" tooltip="{{sacerdocio[miembro.persona_ofisac][0]}}" tooltip-placement="bottom" ng-show="miembro.persona_ofisac">{{miembro.persona_ofisac}}</span>
+			<span class="label label-{{investido[miembro.persona_investido][1]}} margin-left" tooltip="{{investido[miembro.persona_investido][0]}}" tooltip-placement="bottom" ng-show="investido[miembro.persona_investido][2]">{{investido[miembro.persona_investido][2]}}</span>
+			<span class="label label-{{misionero[miembro.persona_exmisionero][1]}} margin-left" tooltip="{{misionero[miembro.persona_exmisionero][0]}}" tooltip-placement="bottom" ng-show="misionero[miembro.persona_exmisionero][2]">{{misionero[miembro.persona_exmisionero][2]}}</span>
+			<span class="label label-{{sellado[miembro.persona_sellado][1]}} margin-left" tooltip="{{sellado[miembro.persona_sellado][0]}}" tooltip-placement="bottom" ng-show="sellado[miembro.persona_sellado][2]">{{sellado[miembro.persona_sellado][2]}}</span>
+		</div>
+		<div class="panel-body">
+			<form class="" role="form" name="datosForm">
+				<fieldset ng-disabled="savingMiembro">
+					<div class="row">
+						<div class="form-group col-md-4">
+							<label for="nom">Nombre</label>
+							<input type="text" class="form-control" id="nom" placeholder="Nombre" ng-model="miembro.persona_nom">
+						</div>
+						<div class="form-group col-md-3">
+							<label for="rut">
+								Rut
+							</label>
+							<button ng-hide="miembro.persona_rut.length > 0 || cargando" type="button" class="btn btn-xs pull-right" ng-model="miembro.persona_no_rut" btn-checkbox="true" ng-class="{'btn-default':!miembro.persona_no_rut, 'btn-danger':miembro.persona_no_rut}" tooltip="Si luego de realizar una busqueda no logra encontrar el Rut, marquelo como no encontrado"><i class="fa fa-times fa-fw" ></i> No encontrado</button>
+							<input type="text" class="form-control" id="rut" placeholder="Rut" ng-model="miembro.persona_rut_h">
+						</div>
+						<div class="form-group col-md-2">
+							<label for="tel">Teléfono</label>
+							<input type="tel" class="form-control" id="tel" placeholder="Telefono" ng-model="miembro.persona_telefono">
+						</div>
+						<div class="form-group col-md-3">
+							<label for="ema">Email</label>
+							<input type="email" class="form-control" id="ema" placeholder="Email" ng-model="miembro.persona_email">
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-2">
+							<label for="fnac">Fecha Nacimiento</label>
+							<input type="text" class="form-control" id="fnac" placeholder="Fecha Nacimiento" ng-model="miembro.persona_fecnac" datepicker-popup="dd/MM/yyyy" datepicker-options="dateOptions" close-text="Close" show-weeks="false" show-button-bar="false">
+						</div>
+					 	<div class="form-group col-md-2">
+							<label for="fdead">Fecha Defunción:</label>
+							<input type="text" class="form-control" id="fdead" placeholder="Fecha Defunción" ng-model="miembro.persona_fecfall" datepicker-popup="dd/MM/yyyy" datepicker-options="dateOptions" close-text="Close" show-weeks="false" show-button-bar="false">
+						</div>
+						<div class="form-group col-md-2">
+							<label for="mis" style="display:block;">Visitada</label>
+							<div class="btn-group">
+						        <button type="button" class="btn btn-default" ng-model="miembro.persona_visitado" btn-radio="true">Si</button>
+						        <button type="button" class="btn btn-default" ng-model="miembro.persona_visitado" btn-radio="false">No</button>
+						    </div>
+						</div>
+						<div class="form-group col-md-3">
+							<label for="sac">Estado</label>
+							<select ui-select2 ng-model="miembro.persona_estado_id" data-placeholder="Estado" style="width:100%;">
+							    <option value=""></option>
+							    <option ng-repeat="r in perEstados" value="{{r.persona_estado_id}}">{{r.persona_estado}}</option>
+							</select>
+						</div>
+						<div class="form-group col-md-1">
+							<label for="sac">Bautismo</label>
+							<p class="form-control-static" style="margin-top:7px;">{{miembro.persona_fecbau | date:'dd/MM/yyyy'}}</p>
+						</div>
+						<div class="form-group col-md-1">
+							<label for="sac">Llegada</label>
+							<p class="form-control-static" style="margin-top:7px;">{{miembro.persona_fecllegada | date:'dd/MM/yyyy'}}</p>
+						</div>
+						<!-- <div class="form-group col-md-2">
+							<label for="sac">Llamamiento</label>
+							<p class="form-control-static">{{miembro.persona_llamamiento}}</p>
+						</div> -->
+					</div>
+					<div class="row">
+						<!-- <div class="form-group col-md-2">
+							<label for="fbau">Fecha Bautismo</label>
+							<input type="text" class="form-control" id="fbau" placeholder="Fecha Bautismo" ng-model="miembro.persona_fecbau" pickadate>
+						</div>
+						<div class="form-group col-md-2">
+							<label for="flleg">Fecha Llegada</label>
+							<input type="text" class="form-control" id="flleg" placeholder="Fecha Llegada" ng-model="miembro.persona_fecllegada" pickadate>
+						</div>
+						
+						<div class="form-group col-md-2">
+							<label for="sac">Sacerdocio</label>
+							<select ui-select2="{ allowClear: true}" ng-model="miembro.persona_ofisac" data-placeholder="Sacerdocio" style="width:100%;">
+							    <option value=""></option>
+							    <option value="N">No ordenado</option>
+							    <option value="D">Diacono</option>
+							    <option value="M">Maestro</option>
+							    <option value="P">Presbitero</option>
+							    <option value="E">Elder</option>
+							    <option value="S">Sumo Sacerdote</option>
+							    <option value="O">Obispo</option>
+							</select>
+						</div>
+						<div class="form-group col-md-4">
+							<label for="llam">Llamamiento</label>
+							<input type="text" class="form-control" id="llam" placeholder="Llamamiento" ng-model="miembro.persona_llamamiento">
+						</div> -->
+						<!-- <div class="form-group col-md-2">
+							<label for="inv">Investido</label>
+							<div class="btn-group">
+						        <button type="button" class="btn btn-default" ng-model="miembro.persona_investido" btn-radio="true">Si</button>
+						        <button type="button" class="btn btn-default" ng-model="miembro.persona_investido" btn-radio="false">No</button>
+						    </div>
+						</div>
+						<div class="form-group col-md-2">
+							<label for="mis">Misión</label>
+							<div class="btn-group">
+						        <button type="button" class="btn btn-default" ng-model="miembro.persona_exmisionero" btn-radio="true">Si</button>
+						        <button type="button" class="btn btn-default" ng-model="miembro.persona_exmisionero" btn-radio="false">No</button>
+						    </div>
+						</div>
+						<div class="form-group col-md-2">
+							<label for="sell">Sellado</label>
+							<div class="btn-group">
+						        <button type="button" class="btn btn-default" ng-model="miembro.persona_sellado" btn-radio="true">Si</button>
+						        <button type="button" class="btn btn-default" ng-model="miembro.persona_sellado" btn-radio="false">No</button>
+						    </div>
+						</div> -->
+						<!-- <div class="form-group col-md-2">
+							<label for="dead" tooltip="Marcar como NO, luego de realizar una busqueda y no poder encontrar el Rut">Rut encontrado:</label>
+							<div class="btn-group">
+						        <button type="button" class="btn btn-default" ng-model="miembro.persona_no_rut" btn-radio="true">Si</button>
+						        <button type="button" class="btn btn-default" ng-model="miembro.persona_no_rut" btn-radio="false">No</button>
+						    </div>
+						</div> -->
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<button type="submit" class="btn btn-primary margin-right" ng-click="guardar()">Actualizar</button>
+							<span ng-show="miembro.modificado"><b>{{miembro.usuario_nom}} {{miembro.usuario_ape}}</b> |  
+							<!-- {{miembro.modificado | date:'medium'}} -->
+							<span am-time-ago="miembro.modificado"></span>
+							</span>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+	<div style="margin-top: 20px">
+	<div class="ui-tab-container">
+	<tabset justified="true">
+		<tab heading="Direcciones">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="subnav">
+						<a href="" class="btn btn-success btn-sm" ng-click="openDirNew()" ng-hide="miembro.persona_verificado"><i class="fa fa-plus fa-fw"></i>Nueva Dirección</a>
+					</div>
+				</div>
+			</div>
+			<table class='table table-striped' ng-show="miembro.direccion.length > 0">
+				<thead>
+					<tr>
+						<th ng-click="setOrden('direccion')" style="cursor:pointer">Dirección<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('direccion')"></span></th>
+						<th ng-click="setOrden('direccion_fuente')" style="cursor:pointer">Fuente<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('direccion_fuente')"></span></th>
+						<th style="width: 180px;">Estado</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="d in miembro.direccion | orderBy:orden" ng-class="{disabled: d.direccion_estado_id>2}">
+						<td class="first">
+							<p>{{d.direccion}}, {{d.comuna_nom}}, {{d.region_nom}}</p>
+							<!-- <div class="comentarios">
+								<form>
+									<textarea class="form-control" rows="1"></textarea>
+								</form>
+							</div> -->
+						</td>
+						<td><span class="label" ng-class="classFuente[d.direccion_fuente_id]">{{d.direccion_fuente}}</span></td>
+						<td>
+							<div>
+								<!-- <label for="mis">Estado: </label> -->
+								<select ui-select2 ng-model="d.direccion_estado_id" data-placeholder="Estado" style="width:155px; margin-left:5px" ng-change="changeDirEst(d)" ng-hide="miembro.persona_verificado">
+								    <option ng-repeat="r in dirEstados" value="{{r.direccion_estado_id}}">{{r.direccion_estado}}</option>
+								</select>
+								<span class="" ng-show="miembro.persona_verificado">{{d.direccion_estado}}</span>
+							</div>
+							<!-- <div style="margin-top: 5px;">
+								<label for="mis">Visitada: </label>
+								<div class="btn-group">
+							        <button type="button" class="btn btn-default btn-sm" ng-model="d.direccion_visitado" btn-radio="true" ng-change="changeDirVis(d)">Si</button>
+							        <button type="button" class="btn btn-default btn-sm" ng-model="d.direccion_visitado" btn-radio="false" ng-change="changeDirVis(d)">No</button>
+							    </div>
+							</div> -->
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</tab>
+		<tab heading="Buscador" ng-if="miembro.persona_edad<0 || miembro.persona_edad>=18">
+			<div ng-controller="BuscadorCtrl">
+				<form style="margin-top: 5px;">
+				<fieldset>
+					<div class="row">
+						<div class="col-md-2" style="padding:0 2px 0 15px;">
+							<input type="text" class="form-control" id="rut" placeholder="Rut" ng-model="bus.rut" ng-disabled="buscando.length>0">
+						</div>
+						<div class="col-md-4" style="padding:0 2px;">
+							<input type="text" class="form-control" id="nom" placeholder="Nombre" ng-model="bus.nom" ng-disabled="buscando.length>0">
+						</div>
+						<div class="col-md-6" style="padding:0 15px 0 2px;">
+							<input type="text" class="form-control" id="dir" placeholder="Dirección" ng-model="bus.dir" ng-disabled="buscando.length>0">
+						</div>
+					</div>
+					<div class="row" style="margin-top:5px">
+						<div class="col-md-2" style="padding:0 2px 0 15px;">
+							<select ui-select2 ng-model="bus.m" data-placeholder="Resultados" style="width:100%;">
+							    <option value=""></option>
+							    <option value="10">10</option>
+							    <option value="20">20</option>
+							    <option value="50">50</option>
+							    <option value="100">100</option>
+							    <option value="200">200</option>
+							    <option value="500">500</option>
+							    <option value="1000">1000</option>
+							</select>
+						</div>
+						<div class="col-md-3" style="padding:0 2px">
+							<select ui-select2="{ allowClear: true}" ng-model="bus.g" data-placeholder="Selecciona una Región" style="width:100%;">
+							    <option value=""></option>
+							    <option ng-repeat="r in regiones" value="{{r.region_id}}">{{r.region_nom}}</option>
+							</select>
+						</div>
+						<div class="col-md-3" style="padding:0 2px;">
+							<select ui-select2="{ allowClear: true}" ng-model="bus.c" data-placeholder="Selecciona una Comuna" style="width:100%;">
+							    <option value=""></option>
+							    <option ng-repeat="r in comunas | filter:{region_id: bus.g}" value="{{r.comuna_id}}">{{r.comuna_nom}}</option>
+							</select>
+						</div>
+						<div class="col-md-2" style="padding:0 2px;">
+							<input type="text" class="form-control" id="dir" placeholder="Fecha de Nac." ng-model="bus.fec" ng-disabled="buscando.length>0" pickadate>
+						</div>
+						
+						<div class="col-md-2" style="padding:0 15px 0 2px;">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" name="fall" ng-model="bus.od"> Solo fallecidos
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="row" style="margin-top:10px;">
+						<div class="col-md-6" style="text-align:left">
+							<button type="submit" class="btn btn-primary" ng-click="search()" ng-disabled="buscando.length>0"><i class="fa fa-search fa-fw"></i>Buscar</button>
+						</div>
+						<div class="col-md-6">
+							
+						</div>
+					</div>
+				</fieldset>
+				</form>
+				<div ng-hide="!personas" class="resultados">
+					<div class="row">
+						<div class="col-md-2">
+						<h3>Personas</h3>
+						</div>
+						<div class="col-md-10">
+							<input class="form-control" type="text" placeholder="Filtrar resultados" ng-model="filtroPersonas.$" ng-show="personas.length>0">
+						</div>
+					</div>
+					<p ng-hide="!personas || personas.length>0">No hay resultados</p>
+					<table class='table table-striped' ng-show="personas.length>0">
+						<thead>
+							<tr>
+								<th ng-click="setOrden('rut')" style="cursor:pointer; width: 80px;"><i class="icon icon-time"></i>Rut<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('rut')"></span></th>
+								<th ng-click="setOrden('name')" style="cursor:pointer"><i class="icon icon-user"></i>Nombre<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('name')"></span></th>
+								<th ng-click="setOrden('address')" style="cursor:pointer"><i class="icon icon-file-text-alt"></i>Direccion<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('address')"></span></th>
+								<th ng-click="setOrden('dob')" style="cursor:pointer"><i class="icon icon-file-text-alt"></i>Fec. Nac.<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('dob')"></span></th>
+								<th ng-click="setOrden('nationality')" style="cursor:pointer"><i class="icon icon-file-text-alt"></i>Nacionalidad<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('nationality')"></span></th>
+								<th ng-click="setOrden('job')" style="cursor:pointer"><i class="icon icon-file-text-alt"></i>Profesión<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('job')"></span></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="p in personas | orderBy:orden | filter:filtroPersonas" ng-class="{dead: p.dead=='t'}">
+								<td>{{p.rut}}</td>
+								<td>{{p.name}}</td>
+								<td><div tooltip-html-unsafe="{{tooltipDirecciones(p)}}" tooltip-trigger="mouseenter">{{p.address}}, <b>{{p.comuna}}</b>, {{p.region}} <span class="label label-info">{{p.inscrdate}}</span></div></td>
+								<td>{{p.dob}}</td>
+								<td>{{p.nationality}}</td>
+								<td>{{p.job}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div ng-hide="!bienesRaices" class="resultados">
+					<div class="row">
+						<div class="col-md-2">
+						<h3>Bienes raices</h3>
+						</div>
+						<div class="col-md-10">
+							<input class="form-control" type="text" placeholder="Filtrar resultados" ng-model="filtroBienesRaices.$" ng-show="bienesRaices.length>0">
+						</div>
+					</div>
+					<p ng-hide="!bienesRaices || bienesRaices.length>0">No hay resultados</p>
+					<table class='table table-striped' ng-show="bienesRaices.length>0">
+						<thead>
+							<tr>
+								<th ng-click="setOrden('rut')" style="cursor:pointer; width: 80px;"><i class="icon icon-time"></i>Rut<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('rut')"></span></th>
+								<th ng-click="setOrden('name')" style="cursor:pointer"><i class="icon icon-user"></i>Nombre<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('name')"></span></th>
+								<th ng-click="setOrden('address')" style="cursor:pointer"><i class="icon icon-file-text-alt"></i>Direccion<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('address')"></span></th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="p in bienesRaices | orderBy:orden | filter:filtroBienesRaices" ng-class="{dead: p.dead=='t'}">
+								<td>{{p.rut}}</td>
+								<td>{{p.name}}</td>
+								<td>{{p.address}}, <b>{{p.comuna}}</b>, {{p.region}}</td>
+								<td>{{p.block}} - {{p.plot}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</tab>
+		<tab heading="Grupo familiar" select="carga('familia')">
+			<p ng-hide="familia">Cargando...</p>
+			<table class="table table-striped table-hover" ng-show="familia">
+				<thead>
+					<tr>
+						<th>Nombre</th>
+						<th>Nacimiento</th>
+						<th>Bautismo</th>
+						<th>Llegada</th>
+						<th>Dirección</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="p in familia" ng-class="{dead: p.persona_fallecido, verificado:p.persona_verificado, no_rut:p.persona_no_rut, cabeza_hogar:p.persona_cabezahogar}">
+						<!-- <td class="first"><a target="_blank" href="#/miembros/{{p.persona_id}}">{{p.persona_rut_h}}</a></td> -->
+						<td><a target="_blank" href="#/miembros/barrio/{{p.barrio_id}}/detalle/{{p.persona_id}}">{{p.persona_nom}} <span ng-show="p.persona_edad>0" class="label label-danger">{{p.persona_edad}}</span></a></td>
+						<td><a target="_blank" href="#/miembros/barrio/{{p.barrio_id}}/detalle/{{p.persona_id}}">{{p.persona_fecnac | date:'dd/MM/yyyy'}}</a></td>
+						<td><a target="_blank" href="#/miembros/barrio/{{p.barrio_id}}/detalle/{{p.persona_id}}">{{p.persona_fecbau | date:'dd/MM/yyyy'}}</a></td>
+						<td><a target="_blank" href="#/miembros/barrio/{{p.barrio_id}}/detalle/{{p.persona_id}}">{{p.persona_fecllegada | date:'dd/MM/yyyy'}}</a></td>
+						<td><div ng-repeat="d in p.direccion"><span class="label" ng-class="classFuente[d.direccion_fuente_id]" style="margin-right: 5px;">{{d.direccion_fuente}}</span>{{d.direccion}}, {{d.comuna_nom}}, {{d.region_nom}}</div></td>
+					</tr>
+				</tbody>
+			</table>
+		</tab>
+		<tab heading="Historial" select="carga('historial')">
+			<p ng-hide="historial">Cargando...</p>
+			<div class="row" ng-show="historial">
+				<div class="col-md-6">
+					<h4>Resumen</h4>
+					<accordion close-others="oneAtATime">
+					    <accordion-group is-open="true" heading="{{historial.resumen.usuario}} | {{historial.resumen.fecha | amDateFormat:'DD-MM-YYYY HH:mm:ss'}}">
+					    	<p ng-hide="historial.resumen.log">No hubo cambios</p>
+				    		<table class="table table-hover" ng-show="historial.resumen.log">
+				    			<thead>
+				    				<tr>
+				    					<th>Campo</th>
+				    					<th>Inicial</th>
+				    					<th>Final</th>
+				    				</tr>
+				    			</thead>
+				    			<tbody>
+				    				<tr ng-repeat="l in historial.resumen.log" ng-class="{danger: l.tipo == 'del', success: l.tipo == 'add'}">
+				    					<td>{{l.attrNom}}</td>
+				    					<td>{{l.ant}}</td>
+				    					<td>{{l.cur}}</td>
+				    				</tr>
+				    			</tbody>
+				    		</table>
+				        </accordion-group>
+				    </accordion>
+				</div>
+				<div class="col-md-6">
+					<h4>Detalle</h4>
+					<p ng-hide="historial.hist">No hay cambios</p>
+					<accordion close-others="oneAtATime">
+					    <accordion-group is-open="true" ng-repeat="h in historial.hist" heading="{{h.usuario}} | {{h.fecha | amDateFormat:'DD-MM-YYYY HH:mm:ss'}}">
+				    		<p ng-hide="h.log">No hubo cambios</p>
+				    		<table class="table table-striped table-hover" ng-show="h.log">
+				    			<thead>
+				    				<tr>
+				    					<th>Campo</th>
+				    					<th>Antes</th>
+				    					<th>Después</th>
+				    				</tr>
+				    			</thead>
+				    			<tbody>
+				    				<tr ng-repeat="l in h.log">
+				    					<td>{{l.attrNom}}</td>
+				    					<td>{{l.ant}}</td>
+				    					<td>{{l.cur}}</td>
+				    				</tr>
+				    			</tbody>
+				    		</table>
+					    </accordion-group>
+				    </accordion>
+				</div>
+			</div>
+		</tab>
+		<tab heading="Comentarios" select="carga('comentarios')">
+			<div class="row">
+				<div class="col-md-12" style="padding-top: 15px;">
+				<p ng-hide="comentarios.length>0">No hay comentarios</p>
+				<ul class="media-list">
+					<li class="media" ng-repeat="c in comentarios">
+						<div class="media-body">
+							<h5 class="media-heading">{{c.usuario_nom}} {{c.usuario_ape}} <small>(<span am-time-ago="c.creado"></span>)</small></h5>
+							<p>{{c.comentario}}</p>
+						</div>
+					</li>
+					<li class="media">
+						<div class="media-body">
+							<form role="form" name="comForm">
+								<div class="form-group">
+								<textarea class="form-control" rows="2" ng-model="com.comentario" ng-disabled="comentando" required></textarea>
+								</div>
+								<button type="submit" class="btn btn-primary" ng-click="comentar()" ng-disabled="comentando || !comForm.$valid">Comentar</button>
+							</form>
+						</div>
+					</li>
+				</ul>
+				</div>
+			</div>
+		</tab>
+	</tabset>
+	</div>
+	</div>
+</div>
+<!-- <div ng-controller="MiembrosIdCtrl"> -->
+    <script type="text/ng-template" id="dirNewForm.html">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">&times;</button>
+			<h4 class="modal-title">Nueva Dirección</h4>
+		</div>
+		<div class="modal-body">
+			<form class="" role="form" name="dirNewForm">
+				<fieldset ng-disabled="savingDireccion">
+					<div class="row">
+						<div class="form-group col-md-12">
+							<label for="dir" class="">Dirección</label>
+							<input type="text" class="form-control" id="dir" placeholder="Dirección" ng-model="dirNew.direccion" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-6">
+							<label for="dir" class="control-label">Región</label>
+							<select ui-select2 ng-model="dirNew.region_id" data-placeholder="Selecciona una Región" style="width:100%;">
+							    <option ng-repeat="r in regiones" value="{{r.region_id}}">{{r.region_nom}}</option>
+							</select>
+						</div>
+						<div class="form-group col-md-6">
+							<label for="com" class="control-label">Comuna</label>		
+							<select ui-select2 ng-model="dirNew.comuna_id" data-placeholder="Selecciona una Comuna" style="width:100%;">
+							    <option ng-repeat="r in comunas | filter:{region_id: dirNew.region_id}" value="{{r.comuna_id}}">{{r.comuna_nom}}</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-md-6">
+							<label for="mis" class="control-label">Estado: </label>
+							<select ui-select2="{ allowClear: true}" ng-model="dirNew.direccion_estado_id" data-placeholder="Estado" style="width:100%;">
+							    <option value=""></option>
+							    <option ng-repeat="r in estados" value="{{r.direccion_estado_id}}">{{r.direccion_estado}}</option>
+							</select>
+						</div>
+						<div class="form-group col-md-3">
+							<label for="mis" class="control-label">Fuente: </label>
+							<select ui-select2 ng-model="dirNew.direccion_fuente_id" data-placeholder="Fuente" style="width:100%;">
+							    <option ng-repeat="r in fuentes" value="{{r.direccion_fuente_id}}">{{r.direccion_fuente}}</option>
+							</select>
+						</div>
+						<div class="form-group col-md-3">
+							<label for="mis" class="control-label" style="display: block;">Visitada: </label>
+							<div class="btn-group">
+						        <button type="button" class="btn btn-default btn-sm" btn-radio="true" ng-model="dirNew.direccion_visitado">Si</button>
+						        <button type="button" class="btn btn-default btn-sm" btn-radio="false" ng-model="dirNew.direccion_visitado">No</button>
+						    </div>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancelar</button>
+			<button type="submit" id="submit" class="btn btn-primary" ng-disabled="!dirNewForm.$valid" ng-click="ok()">Guardar</button>
+		</div>
+    </script>
+<!-- </div> -->
+<!-- <div ng-controller="MiembrosIdCtrl"> -->
+    <script type="text/ng-template" id="verificarForm.html">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">&times;</button>
+			<h4 class="modal-title">Verificar</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" role="form" name="verificarForm">
+				<fieldset ng-disabled="savingVerificar">
+					<div class="form-group">
+						<label for="dir" class="col-md-3 control-label">Dirección</label>
+						<div class="col-md-9">
+							<select ui-select2 ng-model="ver.direccion_id" data-placeholder="Direccion" style="width:400px;">
+							    <option ng-repeat="d in persona.direccion" value="{{d.direccion_id}}">{{d.direccion}}, {{d.comuna_nom}}, {{d.region_nom}}</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="mis" class="col-md-3 control-label">Fuera de la unidad</label>
+						<div class="col-md-9">
+							<div class="btn-group">
+						        <button type="button" class="btn btn-default btn-sm" btn-radio="true" ng-model="ver.persona_fuera_unidad">Si</button>
+						        <button type="button" class="btn btn-default btn-sm" btn-radio="false" ng-model="ver.persona_fuera_unidad">No</button>
+						    </div>
+					    </div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()" ng-disabled="cargando">Cancelar</button>
+			<button type="submit" id="submit" class="btn btn-primary" ng-disabled="!verificarForm.$valid || cargando" ng-click="ok()">Guardar</button>
+		</div>
+    </script>
+    <script type="text/ng-template" id="undoVerificarForm.html">
+    	<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">&times;</button>
+			<h4 class="modal-title">Anular verificación</h4>
+		</div>
+		<div class="modal-body">
+			<p>¿Realmente desea anular la verificación?</p>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()" ng-disabled="cargando">No</button>
+			<button type="submit" id="submit" class="btn btn-primary" ng-disabled="cargando" ng-click="ok()">Si</button>
+		</div>
+    </script>
+<!-- </div> -->

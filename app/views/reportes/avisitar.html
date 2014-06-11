@@ -1,0 +1,167 @@
+<div class="page print">
+	<div class="row" style="margin-bottom: 10px;">
+		<div class="col-md-6">
+			<h2 class="sec-title" style="margin-top: 0"><span data-i18n="Reports"></span><small class="margin-left">/</small><small data-i18n="To Visit" class="margin-left"></small></h2>
+		</div>
+		<div class="col-md-6 no-print" style="text-align: right">
+			<div ng-show="acceso" class="fade-show" style="padding: 0 5px;">
+		        <div class="input-group select2-bootstrap-append">
+					<select ui-select2="{allowClear: true}" ng-model="cargaAux" data-placeholder="Seleccione la unidad" style="width:309px; text-align: left;" ng-show="acceso" ng-disabled="cargando">
+						<option></option>
+						<optgroup label="Mision">
+					    	<option ng-repeat="f in acceso.mision | filter:{mision_id: carga.mision_id}" value="{{f}}">{{f.mision_nom}}</option>
+						</optgroup>
+						<optgroup label="Estaca">
+					    	<option ng-repeat="f in acceso.estaca | filter:{mision_id: carga.mision_id, estaca_id: carga.estaca_id}" value="{{f}}">{{f.estaca_nom}}</option>
+						</optgroup>
+						<optgroup label="Barrio">
+					    	<option ng-repeat="f in acceso.barrio | filter:carga:strict" value="{{f}}">{{f.barrio_nom}}</option>
+						</optgroup>
+					</select>
+					<span class="input-group-btn">
+			          <button class="btn btn-primary" type="button" data-select2-open="multi-append" ng-click="cargarReporte()" ng-disabled="cargando || !carga.barrio_id">
+			            <i class="fa fa-check"></i>
+			          </button>
+			        </span>
+		        </div>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="panel panel-default" ng-show="miembros">
+		<div class="panel-heading no-print">
+		<div class="row filtros">
+			<div class="col-md-12">
+				<div class="input-group">
+					<span class="input-group-btn">
+						<button class="btn btn-default" onclick="window.print()" tooltip="Imprimir"><i class="fa fa-print"></i></button>
+						<div class="btn-group" dropdown>
+							<button type="button" class="btn btn-default dropdown-toggle" tooltip="Filtrar">
+								<i class="fa fa-filter"></i>
+							</button>
+							<ul class="dropdown-menu with-arrow dropdown-check dropdown-right">
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.all" type="checkbox">
+											<span>Todos</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.sin_rut" type="checkbox">
+											<span>Sin Rut</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.sin_dir_mls" type="checkbox">
+											<span>Sin Dirección MLS</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.persona_cabezahogar" type="checkbox">
+											<span>Cabeza de Hogar</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.persona_investido" type="checkbox">
+											<span>Investidos</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.persona_sellado" type="checkbox">
+											<span>Sellados</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.persona_exmisionero" type="checkbox">
+											<span>Ex Misioneros</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_n" type="checkbox">
+											<span>No Ordenado</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_d" type="checkbox">
+											<span>Diaconos</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_m" type="checkbox">
+											<span>Maestros</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_p" type="checkbox">
+											<span>Presbiteros</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_e" type="checkbox">
+											<span>Elderes</span>
+									</label>
+								</li>
+								<li>
+									<label class="ui-checkbox">
+										<input ng-model="filtroPreAux.oficio_s" type="checkbox">
+											<span>Sumo Sacerdotes</span>
+									</label>
+								</li>
+							</ul>
+						</div>
+						<div class="btn-group" dropdown>
+							<button type="button" class="btn btn-default dropdown-toggle" tooltip="Ordenar">
+								<i class="fa fa-sort-amount-asc"></i>
+							</button>
+							<ul class="dropdown-menu with-arrow">
+								<li ng-class="{active: currOrden == 'persona_nom'}"><a ng-click="setOrden('persona_nom')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('persona_nom')" style="margin-left: -18px;"></span>Nombre</a></li>
+								<li ng-class="{active: currOrden == 'persona_edad'}"><a ng-click="setOrden('persona_edad')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('persona_edad')" style="margin-left: -18px;"></span>Edad</a></li>
+								<li ng-class="{active: currOrden == 'direccion_fuente'}"><a ng-click="setOrden('direccion_fuente')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('direccion_fuente')" style="margin-left: -18px;"></span>Fuente</a></li>
+								<li ng-class="{active: currOrden == 'direccion'}"><a ng-click="setOrden('direccion')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('direccion')" style="margin-left: -18px;"></span>Dirección</a></li>
+							</ul>
+						</div>
+					</span>
+					<input class="form-control" type="text" placeholder="Filtrar miembros" ng-model="filtro.$">
+				</div>
+		    </div>
+		</div>
+		</div>
+		<table class='responsive table table-striped table-hover table-bordered reporte print'>
+			<thead>
+				<tr>
+					<th>Nombre</th>
+					<th>Edad</th>
+					<th>Fuente</th>
+					<th>Dirección</th>
+					<th><span tooltip="Vive ahí" style="padding: 8px;padding: 8;margin: -8px;cursor: pointer;"><i class="fa fa-check fa-fw"></i></span></th>
+					<th><span tooltip="No vive ahí" style="padding: 8px;padding: 8;margin: -8px;cursor: pointer;"><i class="fa fa-times fa-fw"></i></span></th>
+					<th><span tooltip="Dirección no existe" style="padding: 8px;padding: 8;margin: -8px;cursor: pointer;"><i class="fa fa-question fa-fw"></i></span></th>
+					<th><span tooltip="Fuera de la unidad" style="padding: 8px;padding: 8;margin: -8px;cursor: pointer;"><i class="fa fa-external-link fa-fw"></i></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="p in miembros | orderBy:orden | multiple:filtro:'persona_nom,direccion' | filterMultiple:filtroPre" ng-class="{cabeza_hogar:p.persona_cabezahogar}">
+					<td class="first">{{p.persona_nom}}</td>
+					<td>{{p.persona_edad}}</td>
+					<td><span class="label" ng-class="classFuente[p.direccion_fuente_id]">{{p.direccion_fuente}}</span></td>
+					<td>{{p.direccion}}</td>
+					<td><label class="ui-radio no-print" style="margin: 0 0 0 20px;"><input name="radio{{p.direccion_id}}" type="radio" value="option2"><span style="width: 0;display: block;"></span></label></td>
+					<td><label class="ui-radio no-print" style="margin: 0 0 0 20px;"><input name="radio{{p.direccion_id}}" type="radio" value="option2"><span style="width: 0;display: block;"></span></label></td>
+					<td><label class="ui-radio no-print" style="margin: 0 0 0 20px;"><input name="radio{{p.direccion_id}}" type="radio" value="option2"><span style="width: 0;display: block;"></span></label></td>
+					<td><label class="ui-radio no-print" style="margin: 0 0 0 20px;"><input name="radio{{p.direccion_id}}" type="radio" value="option2"><span style="width: 0;display: block;"></span></label></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

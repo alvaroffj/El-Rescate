@@ -1,0 +1,113 @@
+<div class="golden-ratio-2" ng-controller="UsuariosCtrl">
+	<div class="row">
+		<div class="col-md-12">
+			<h2 class="sec-title"><span data-i18n="Users"></span></h2>
+			<a ng-if = "User.usuario_permisos_usuarios == 3" class="btn btn-line-primary pull-right btn-xs" ng-click="registrar()" style="margin:10px 5px 0 0" tooltip="Crear Cuenta" tooltip-placement="bottom"><i class="fa fa-plus fa-fw"></i></a>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="row">
+		<div class="col-md-12" style="text-align: right">
+			<div ng-show="acceso" class="fade-show" style="padding: 0 5px;">
+		        <div class="input-group select2-bootstrap-append">
+					<select ui-select2="{allowClear: true}" ng-model="cargaAux" data-placeholder="Seleccione la unidad" style="width:309px; text-align: left;" ng-show="acceso" ng-disabled="cargando">
+						<option></option>
+						<optgroup label="Area">
+					    	<option ng-repeat="f in acceso.area | filter:{area_id: carga.area_id}" value="{{f}}">{{f.area_nom}}</option>
+						</optgroup>
+						<optgroup label="Mision">
+					    	<option ng-repeat="f in acceso.mision | filter:{mision_id: carga.mision_id}" value="{{f}}">{{f.mision_nom}}</option>
+						</optgroup>
+						<optgroup label="Estaca">
+					    	<option ng-repeat="f in acceso.estaca | filter:{mision_id: carga.mision_id, estaca_id: carga.estaca_id}" value="{{f}}">{{f.estaca_nom}}</option>
+						</optgroup>
+						<optgroup label="Barrio">
+					    	<option ng-repeat="f in acceso.barrio | filter:{mision_id: carga.mision_id, estaca_id: carga.estaca_id}" value="{{f}}">{{f.barrio_nom}}</option>
+						</optgroup>
+					</select>
+					<span class="input-group-btn">
+			          <button class="btn btn-primary" type="button" data-select2-open="multi-append" ng-click="cargar()" ng-disabled="cargando">
+			            <i class="fa fa-check"></i>
+			          </button>
+			        </span>
+		        </div>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div ng-show="usuarios">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="input-group">
+					<span class="input-group-btn">
+						<div class="btn-group" dropdown>
+							<button type="button" class="btn btn-default dropdown-toggle" tooltip="Ordenar">
+								<i class="fa fa-sort-amount-asc"></i>
+							</button>
+							<ul class="dropdown-menu with-arrow">
+								<li ng-class="{active: currOrden == 'usuario_nom'}"><a ng-click="setOrden('usuario_nom')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('usuario_nom')" style="margin-left: -18px;"></span>Nombre</a></li>
+								<li ng-class="{active: currOrden == 'usuario_ape'}"><a ng-click="setOrden('usuario_ape')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('usuario_ape')" style="margin-left: -18px;"></span>Apellido</a></li>
+								<li ng-class="{active: currOrden == 'usuario_lastaccess'}"><a ng-click="setOrden('usuario_lastaccess')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('usuario_lastaccess')" style="margin-left: -18px;"></span>Último Acceso</a></li>
+								<li ng-class="{active: currOrden == 'num_mod'}"><a ng-click="setOrden('num_mod')"><span class="fa-fw" ng-class="flechaOrden()" ng-show="isColActive('num_mod')" style="margin-left: -18px;"></span>Modificaciones</a></li>
+							</ul>
+						</div>
+					</span>
+					<input class="form-control" type="text" placeholder="Filtrar usuarios" ng-model="filtro.$">
+				</div>
+		    </div>
+		</div>
+		<div style="position:absolute; top:112px; bottom:0">
+			<div data-slim-scroll>
+				<a  ng-repeat="p in usuarios | orderBy:orden | filter:filtro" href="#/usuarios/{{nivel}}/{{unidad}}/detalle/{{p.usuario_id}}">
+					<div class="persona">
+						<span class="nombre"><strong>{{p.usuario_nom}} {{p.usuario_ape}}</strong><small> (<span am-time-ago="p.usuario_lastaccess"></span>)</small>
+						<span class="badge badge-danger pull-right">{{p.num_mod}}</span>
+						</span>
+						<!-- <span class="fecha" style="color:white">{{p.usuario_lastaccess}}</span> -->
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+<div ui-view class="golden-ratio-3"></div>
+<script type="text/ng-template" id="registro.html">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">&times;</button>
+        <h4 class="modal-title">Crear cuenta</h4>
+    </div>
+    <div class="modal-body">
+        <form name="regForm" class="form-signin" ng-submit="doRegistro()" novalidate>
+        	<fieldset ng-disabled="cargando">
+            <input name="email" type="email" ng-model="reg.usuario_user" class="form-control" placeholder="Email" style="margin-bottom:10px" required autofocus>
+            <input name="nom" type="text" ng-model="reg.usuario_nom" class="form-control" placeholder="Nombre" style="margin-bottom:10px" required>
+            <input name="ape" type="text" ng-model="reg.usuario_ape" class="form-control" placeholder="Apellido" style="margin-bottom:10px" required>
+            <select ui-select2="{allowClear: false}" ng-model="reg.unidad" data-placeholder="Seleccione la unidad" style="width:100%; text-align: left; margin-bottom: 10px" ng-show="acceso" ng-disabled="cargando" required>
+				<option></option>
+				<optgroup label="Area">
+			    	<option ng-repeat="f in acceso.area | filter:{area_id: carga.area_id}" value="{{f}}">{{f.area_nom}}</option>
+				</optgroup>
+				<optgroup label="Mision">
+			    	<option ng-repeat="f in acceso.mision | filter:{mision_id: carga.mision_id}" value="{{f}}">{{f.mision_nom}}</option>
+				</optgroup>
+				<optgroup label="Estaca">
+			    	<option ng-repeat="f in acceso.estaca | filter:{mision_id: carga.mision_id, estaca_id: carga.estaca_id}" value="{{f}}">{{f.estaca_nom}}</option>
+				</optgroup>
+				<optgroup label="Barrio">
+			    	<option ng-repeat="f in acceso.barrio | filter:{mision_id: carga.mision_id, estaca_id: carga.estaca_id}" value="{{f}}">{{f.barrio_nom}}</option>
+				</optgroup>
+			</select>
+			<select ui-select2="{allowClear: false}" ng-model="reg.permisos_usuarios" data-placeholder="Acceso a usuarios" style="width:100%; text-align: left;" ng-disabled="cargando" required>
+				<option></option>
+				<option value="0">Ninguno</option>
+				<option value="1">Ver</option>
+				<option value="2">Ver y Editar</option>
+				<option value="3">Ver, Editar y Crear</option>
+			</select>
+			</fieldset>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-lg btn-primary btn-block" type="submit" ng-disabled="regForm.$invalid || cargando" ng-click="doRegistro(regForm)">Crear cuenta</button>
+    </div>
+</script>

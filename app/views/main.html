@@ -1,0 +1,233 @@
+<div class="page">
+	<div class="row" style="margin-bottom: 10px">
+		<div class="col-md-6">
+			<h2 class="sec-title" style="margin-top: 0"><span data-i18n="Statistics"></span><small class="margin-left">/ {{titulo}}</small></h2>
+		</div>
+		<div class="col-md-6" style="text-align: right">
+			<div ng-show="acceso" class="fade-show" style="padding: 0 5px;">
+		        <div class="input-group select2-bootstrap-append">
+					<select ui-select2="{allowClear: true}" ng-model="cargaAux" data-placeholder="Seleccione la unidad" style="width:309px; text-align: left;" ng-show="acceso" ng-disabled="cargando">
+						<option></option>
+						<optgroup label="Area">
+					    	<option ng-repeat="f in acceso.area | filter:{area_id: carga.area_id}" value="{{f}}">{{f.area_nom}}</option>
+						</optgroup>
+						<optgroup label="Mision">
+					    	<option ng-repeat="f in acceso.mision | filter:{mision_id: carga.mision_id}" value="{{f}}">{{f.mision_nom}}</option>
+						</optgroup>
+						<optgroup label="Estaca">
+					    	<option ng-repeat="f in acceso.estaca | filter:{mision_id: carga.mision_id, estaca_id: carga.estaca_id}" value="{{f}}">{{f.estaca_nom}}</option>
+						</optgroup>
+						<optgroup label="Barrio">
+					    	<option ng-repeat="f in acceso.barrio | filter:{mision_id: carga.mision_id, estaca_id: carga.estaca_id}" value="{{f}}">{{f.barrio_nom}}</option>
+						</optgroup>
+					</select>
+					<span class="input-group-btn">
+			          <button class="btn btn-primary" type="button" data-select2-open="multi-append" ng-click="cargarEstadisticas()" ng-disabled="cargando">
+			            <i class="fa fa-check"></i>
+			          </button>
+			        </span>
+		        </div>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div ng-show="data.length > 0">
+		<div class="row">
+			<div class="col-md-4">
+				<div class="panel panel-default" style="height:300px">
+					<div class="panel-heading">Total</div>
+					<nvd3-pie-chart
+				    	data="d3Total"
+				        id="d3Total"
+				        x="xFunction()"
+				        y="yFunction()"
+				        donut="true"
+				        tooltips="true"
+				        showLabels="true"
+				        labelType="percent"
+				        donutLabelsOutside="true"
+				        margin="{left:0,top:15,bottom:50,right:0}"
+				        tooltipcontent="toolTipContentFunction()"
+				        donutRatio=".7">
+				        <svg></svg>
+		        	</nvd3-pie-chart>
+				</div>	
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-default" style="height:300px">
+					<div class="panel-heading">Adultos</div>
+					<nvd3-pie-chart
+				    	data="d3Adulto"
+				        id="d3Adulto"
+				        x="xFunction()"
+				        y="yFunction()"
+				        donut="true"
+				        tooltips="true"
+				        showLabels="true"
+				        labelType="percent"
+				        donutLabelsOutside="true"
+				        margin="{left:0,top:15,bottom:50,right:0}"
+				        tooltipcontent="toolTipContentFunction()"
+				        color="colorBi()"
+				        donutRatio=".7">
+				        <svg></svg>
+		        	</nvd3-pie-chart>
+				</div>	
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-default" style="height:300px">
+					<div class="panel-heading">Ruts</div>
+					<nvd3-pie-chart
+				    	data="d3Rut"
+				        id="d3Rut"
+				        x="xFunction()"
+				        y="yFunction()"
+				        donut="true"
+				        tooltips="true"
+				        showLabels="true"
+				        labelType="percent"
+				        color="colorBi()"
+				        donutLabelsOutside="true"
+				        margin="{left:0,top:15,bottom:50,right:0}"
+				        tooltipcontent="toolTipContentFunction()"
+				        donutRatio=".7">
+				        <svg></svg>
+		        	</nvd3-pie-chart>
+				</div>	
+			</div>
+		</div>
+		<div class="row">
+	        <div class="col-md-8">
+	            <section class="panel panel-default" style="height: 450px">
+	                <div class="panel-heading"><span class="glyphicon glyphicon-th"></span> Visitados / Verificados</div>
+	                <nvd3-line-chart
+				        data="visitasD3"
+				        id="visitasD3"
+				        showXAxis="true"
+				        showYAxis="true"
+				        tooltips="true"
+				        useInteractiveGuideline="true"
+				        xAxisTickFormat="xAxisTickFormatFunction()"
+				        margin="{left:45,top:20,bottom:75,right:30}"
+				        showLegend="true"
+				        interactive="true"
+				        color="colorFunction()"
+				        tooltips="true">
+				    	<svg></svg>
+				    </nvd3-line-chart>
+	            </section>
+	        </div>
+	        <div class="col-md-4 modCom">
+	            <!-- <section class="panel panel-default" style="height: 410px">
+	                <div class="panel-heading"><span class="glyphicon glyphicon-th"></span> Últimas modificaciones</div>
+	                <ul class="list-group" data-slim-scroll>
+	                    <li ng-repeat="p in lastMod"  class="list-group-item">
+	                        <a href="#/miembros/barrio/{{p.barrio_id}}/detalle/{{p.persona_id}}">{{p.persona_nom}}</a> <small>/ {{p.usuario_nom}} {{p.usuario_ape}} (<span am-time-ago="p.modificado"></span>)</small>
+	                    </li>
+	                </ul>
+	            </section> -->
+	            <div class="ui-tab-container">
+                    <tabset justified="true" class="ui-tab">
+                        <tab heading="Modificaciones">
+                        	<div data-slim-scroll scroll-height="407">
+	                        	<ul class="list-group" style="margin-bottom: 0">
+				                    <li ng-repeat="p in lastMod"  class="list-group-item">
+				                        <a href="#/miembros/barrio/{{p.barrio_id}}/detalle/{{p.persona_id}}">{{p.persona_nom}}</a> <small>/ {{p.usuario_nom}} {{p.usuario_ape}} (<span am-time-ago="p.modificado"></span>)</small>
+				                    </li>
+				                </ul>
+                        	</div>
+                        </tab>
+                        <tab heading="Comentarios">
+                        	<div data-slim-scroll scroll-height="407">
+	                        	<ul class="list-group" style="margin-bottom: 0">
+				                    <li ng-repeat="p in lastCom"  class="list-group-item">
+				                        <a href="#/miembros/barrio/{{p.barrio_id}}/detalle/{{p.persona_id}}">{{p.persona_nom}}</a>
+				                        <p style="margin:0">{{p.comentario}}</p>
+				                        <small>({{p.usuario_nom}} {{p.usuario_ape}} | <span am-time-ago="p.creado"></span>)</small>
+				                    </li>
+				                </ul>
+                        	</div>
+                        </tab>
+                    </tabset>
+                </div>
+	        </div>
+	    </div>
+		<div class="panel panel-default">
+			<div class="panel-heading"><span class="glyphicon glyphicon-th"></span> Estadisticas</div>
+			<table class="responsive table table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="indicador">Indicador</th>
+						<th ng-repeat="e in data">{{e.unidad_nom}}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="indicador">Total</td>
+						<td ng-repeat="e in data"><span class="num">{{e.total}}</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Adultos</td>
+						<td ng-repeat="e in data"><span class="num">{{e.adult}}</span> <span class="por">{{e.adult_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Ruts</td>
+						<td ng-repeat="e in data"><span class="num">{{e.rut}}</span> <span class="por">{{e.rut_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Fallecido c/fecha</td>
+						<td ng-repeat="e in data"><span class="num">{{e.deaddate}}</span> <span class="por">{{e.deaddate_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Fallecido s/fecha</td>
+						<td ng-repeat="e in data"><span class="num">{{e.dead}}</span> <span class="por">{{e.dead_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Visitado</td>
+						<td ng-repeat="e in data"><span class="num">{{e.visited}}</span> <span class="por">{{e.visited_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Verificado</td>
+						<td ng-repeat="e in data"><span class="num">{{e.verified}}</span> <span class="por">{{e.verified_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Afuera</td>
+						<td ng-repeat="e in data"><span class="num">{{e.outside}}</span> <span class="por">{{e.outside_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">No se encuentra</td>
+						<td ng-repeat="e in data"><span class="num">{{e.notfound}}</span> <span class="por">{{e.notfound_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Para actualizar en MLS</td>
+						<td ng-repeat="e in data"><span class="num">{{e.tomlsupdate}}</span> <span class="por">{{e.tomlsupdate_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Actualizado MLS</td>
+						<td ng-repeat="e in data"><span class="num">{{e.mlsupdated}}</span> <span class="por">{{e.mlsupdated_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Activo</td>
+						<td ng-repeat="e in data"><span class="num">{{e.active}}</span> <span class="por">{{e.active_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Volviendo a la iglesia</td>
+						<td ng-repeat="e in data"><span class="num">{{e.returning}}</span> <span class="por">{{e.returning_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Menos activo (no receptivo)</td>
+						<td ng-repeat="e in data"><span class="num">{{e.lessactivenotreceptive}}</span> <span class="por">{{e.lessactivenotreceptive_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Menos activo (receptivo)</td>
+						<td ng-repeat="e in data"><span class="num">{{e.lessactivereceptive}}</span> <span class="por">{{e.lessactivereceptive_p}}%</span></td>
+					</tr>
+					<tr>
+						<td class="indicador">Se mudo</td>
+						<td ng-repeat="e in data"><span class="num">{{e.moved}}</span> <span class="por">{{e.moved_p}}%</span></td>
+					</tr>
+				</tbody>
+			</table>
+		<div>
+	</div>
+</div>	

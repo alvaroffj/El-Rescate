@@ -1,0 +1,135 @@
+<div class="page">
+	<div class="panel panel-default">
+		<div class="panel-heading"><strong><span class="glyphicon glyphicon-th"></span> <span data-i18n="Search"></span></strong></div>
+		<div class="panel-body">
+			<form>
+				<fieldset>
+					<div class="row">
+						<div class="col-md-2" style="padding:0 2px 0 15px;">
+							<input type="text" class="form-control" id="rut" placeholder="Rut" ng-model="bus.rut" ng-disabled="buscando.length>0">
+						</div>
+						<div class="col-md-4" style="padding:0 2px;">
+							<input type="text" class="form-control" id="nom" placeholder="Nombre" ng-model="bus.nom" ng-disabled="buscando.length>0">
+						</div>
+						<div class="col-md-6" style="padding:0 15px 0 2px;">
+							<input type="text" class="form-control" id="dir" placeholder="Dirección" ng-model="bus.dir" ng-disabled="buscando.length>0">
+						</div>
+					</div>
+					<div class="row" style="margin-top:5px">
+						<div class="col-md-2" style="padding:0 2px 0 15px;">
+							<select ui-select2 ng-model="bus.m" data-placeholder="Resultados" style="width:100%;">
+							    <option value=""></option>
+							    <option value="10">10</option>
+							    <option value="20">20</option>
+							    <option value="50">50</option>
+							    <option value="100">100</option>
+							    <option value="200">200</option>
+							    <option value="500">500</option>
+							    <option value="1000">1000</option>
+							</select>
+						</div>
+						<div class="col-md-3" style="padding:0 2px">
+							<select ui-select2="{ allowClear: true}" ng-model="bus.g" data-placeholder="Selecciona una Región" style="width:100%;">
+							    <option value=""></option>
+							    <option ng-repeat="r in regiones" value="{{r.region_id}}">{{r.region_nom}}</option>
+							</select>
+						</div>
+						<div class="col-md-3" style="padding:0 2px;">
+							<select ui-select2="{ allowClear: true}" ng-model="bus.c" data-placeholder="Selecciona una Comuna" style="width:100%;">
+							    <option value=""></option>
+							    <option ng-repeat="r in comunas | filter:{region_id: bus.g}" value="{{r.comuna_id}}">{{r.comuna_nom}}</option>
+							</select>
+						</div>
+						<div class="col-md-2" style="padding:0 2px;">
+							<input type="text" class="form-control" id="dir" placeholder="Fecha de Nac." ng-model="bus.fec" ng-disabled="buscando.length>0" pickadate>
+						</div>
+						
+						<div class="col-md-2" style="padding:0 15px 0 2px;">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" name="fall" ng-model="bus.od"> Solo fallecidos
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="row" style="margin-top:10px;">
+						<div class="col-md-6" style="text-align:left">
+							<button type="submit" class="btn btn-primary" ng-click="search()" ng-disabled="buscando.length>0"><i class="fa fa-search fa-fw"></i>Buscar</button>
+						</div>
+						<div class="col-md-6">
+							
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+	<div class="panel panel-default resultados fade-show" ng-hide="!personas">
+		<div class="panel-heading">
+			<div class="row">
+				<div class="col-md-2">
+					<strong><span class="glyphicon glyphicon-th"></span> <span data-i18n="People"></span></strong>
+				</div>
+				<div class="col-md-10">
+					<input class="form-control" type="text" placeholder="Filtrar resultados" ng-model="filtroPersonas.$" ng-show="personas.length>0">
+				</div>
+			</div>
+		</div>
+	
+		<p ng-hide="!personas || personas.length>0">No hay resultados</p>
+		<table class='table table-striped' ng-show="personas.length>0">
+			<thead>
+				<tr>
+					<th ng-click="setOrden('rut')" style="cursor:pointer; width: 80px;"><i class="icon icon-time"></i>Rut<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('rut')"></span></th>
+					<th ng-click="setOrden('name')" style="cursor:pointer"><i class="icon icon-user"></i>Nombre<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('name')"></span></th>
+					<th ng-click="setOrden('address')" style="cursor:pointer"><i class="icon icon-file-text-alt"></i>Direccion<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('address')"></span></th>
+					<th ng-click="setOrden('dob')" style="cursor:pointer"><i class="icon icon-file-text-alt"></i>Fec. Nac.<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('dob')"></span></th>
+					<th ng-click="setOrden('nationality')" style="cursor:pointer"><i class="icon icon-file-text-alt"></i>Nacionalidad<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('nationality')"></span></th>
+					<th ng-click="setOrden('job')" style="cursor:pointer"><i class="icon icon-file-text-alt"></i>Profesión<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('job')"></span></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="p in personas | orderBy:orden | filter:filtroPersonas" ng-class="{dead: p.dead=='t'}">
+					<td>{{p.rut}}</td>
+					<td>{{p.name}}</td>
+					<td><div tooltip-html-unsafe="{{tooltipDirecciones(p)}}" tooltip-trigger="mouseenter">{{p.address}}, <b>{{p.comuna}}</b>, {{p.region}} <span class="label label-info">{{p.inscrdate}}</span></div></td>
+					<td>{{p.dob}}</td>
+					<td>{{p.nationality}}</td>
+					<td>{{p.job}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="panel panel-default resultados fade-show" ng-hide="!bienesRaices">
+		<div class="panel-heading">
+			<div class="row">
+				<div class="col-md-2">
+					<strong><span class="glyphicon glyphicon-th"></span> <span data-i18n="Real Estate"></span></strong>
+				</div>
+				<div class="col-md-10">
+					<input class="form-control" type="text" placeholder="Filtrar resultados" ng-model="filtroBienesRaices.$" ng-show="bienesRaices.length>0">
+				</div>
+			</div>
+		</div>
+		<p ng-hide="!bienesRaices || bienesRaices.length>0">No hay resultados</p>
+		<table class='table table-striped' ng-show="bienesRaices.length>0">
+			<thead>
+				<tr>
+					<th ng-click="setOrden('rut')" style="cursor:pointer; width: 80px;"><i class="icon icon-time"></i>Rut<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('rut')"></span></th>
+					<th ng-click="setOrden('name')" style="cursor:pointer"><i class="icon icon-user"></i>Nombre<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('name')"></span></th>
+					<th ng-click="setOrden('address')" style="cursor:pointer"><i class="icon icon-file-text-alt"></i>Direccion<span class="icon-right" ng-class="flechaOrden()" ng-show="isColActive('address')"></span></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="p in bienesRaices | orderBy:orden | filter:filtroBienesRaices" ng-class="{dead: p.dead=='t'}">
+					<td>{{p.rut}}</td>
+					<td>{{p.name}}</td>
+					<td>{{p.address}}, <b>{{p.comuna}}</b>, {{p.region}}</td>
+					<td>{{p.block}} - {{p.plot}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
